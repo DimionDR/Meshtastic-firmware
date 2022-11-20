@@ -73,7 +73,7 @@ meshtastic::PowerStatus powerStatus;
 meshtastic::GPSStatus gpsStatus;
 
 // Global Node status
-meshtastic::NodeStatus *nodeStatus = new meshtastic::NodeStatus();
+meshtastic::NodeStatus nodeStatus;
 
 /// The I2C address of our display (if found)
 uint8_t screen_found;
@@ -330,7 +330,7 @@ void setup()
     else
         DEBUG_MSG("Warning: No GPS found - running without GPS\n");
 
-    nodeStatus->observe(&nodeDB.newStatus);
+    nodeStatus.observe(&nodeDB.newStatus);
 
     service.init();
 

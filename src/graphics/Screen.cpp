@@ -990,7 +990,7 @@ void Screen::setup()
     // Subscribe to status updates
     powerStatusObserver.observe(&powerStatus.onNewStatus);
     gpsStatusObserver.observe(&gpsStatus.onNewStatus);
-    nodeStatusObserver.observe(&nodeStatus->onNewStatus);
+    nodeStatusObserver.observe(&nodeStatus.onNewStatus);
     if (textMessageModule)
         textMessageObserver.observe(textMessageModule);
 
@@ -1185,7 +1185,7 @@ void Screen::setFrames()
     DEBUG_MSG("Total frame count: %d\n", totalFrameCount);
 
     // We don't show the node info our our node (if we have it yet - we should)
-    size_t numnodes = nodeStatus->getNumTotal();
+    size_t numnodes = nodeStatus.getNumTotal();
     if (numnodes > 0)
         numnodes--;
 
@@ -1370,7 +1370,7 @@ void DebugInfo::drawFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16
     else if (powerStatus.knowsUSB())
         display->drawFastImage(x, y + 2, 16, 8, powerStatus.getHasUSB() ? imgUSB : imgPower);
     // Display nodes status
-    drawNodes(display, x + (SCREEN_WIDTH * 0.25), y + 2, nodeStatus);
+    drawNodes(display, x + (SCREEN_WIDTH * 0.25), y + 2, &nodeStatus);
     // Display GPS status
     drawGPS(display, x + (SCREEN_WIDTH * 0.63), y + 2, &gpsStatus);
 
@@ -1652,7 +1652,7 @@ int Screen::handleStatusUpdate(const meshtastic::Status *arg)
     // DEBUG_MSG("Screen got status update %d\n", arg->getStatusType());
     switch (arg->getStatusType()) {
     case STATUS_TYPE_NODE:
-        if (showingNormalScreen && nodeStatus->getLastNumTotal() != nodeStatus->getNumTotal()) {
+        if (showingNormalScreen && nodeStatus.getLastNumTotal() != nodeStatus.getNumTotal()) {
             setFrames(); // Regen the list of screens
         }
         nodeDB.updateGUI = false;

@@ -80,4 +80,4 @@ namespace meshtastic {
 
 }
 
-extern meshtastic::NodeStatus *nodeStatus;
+extern meshtastic::NodeStatus nodeStatus;
