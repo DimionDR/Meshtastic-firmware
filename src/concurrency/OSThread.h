@@ -10,7 +10,7 @@
 namespace concurrency
 {
 
-extern ThreadController mainController, timerController;
+extern ThreadController mainController;
 extern InterruptableDelay mainDelay;
 
 #define RUN_SAME -1
