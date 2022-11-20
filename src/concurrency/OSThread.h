@@ -66,7 +66,7 @@ class OSThread : public Thread
     virtual int32_t runOnce() = 0;
 
     // Do not override this
-    virtual void run();
+    virtual void run() final;
 };
 
 /**
