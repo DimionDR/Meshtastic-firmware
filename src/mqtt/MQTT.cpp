@@ -41,7 +41,8 @@ void MQTT::onPublish(char *topic, byte *payload, unsigned int length)
         if (err.empty()) {
             DEBUG_MSG("JSON Received on MQTT, parsing..\n");
             // check if it is a valid envelope
-            if (json.object_items().count("sender") != 0 && json.object_items().count("payload") != 0 && json["type"].string_value().compare("sendtext") == 0) {
+            if (json.object_items().count("sender") != 0 && json.object_items().count("payload") != 0 &&
+                json["type"].string_value().compare("sendtext") == 0) {
                 // this is a valid envelope
                 if (json["sender"].string_value().compare(owner.id) != 0) {
                     std::string jsonPayloadStr = json["payload"].dump();
@@ -72,7 +73,7 @@ void MQTT::onPublish(char *topic, byte *payload, unsigned int length)
         if (!pb_decode_from_bytes(payload, length, ServiceEnvelope_fields, &e)) {
             DEBUG_MSG("Invalid MQTT service envelope, topic %s, len %u!\n", topic, length);
             return;
-        }else {
+        } else {
             if (strcmp(e.gateway_id, owner.id) == 0)
                 DEBUG_MSG("Ignoring downlink message we originally sent.\n");
             else {
@@ -124,9 +125,8 @@ void MQTT::reconnect()
         const char *mqttPassword = "large4cats";
 
         if (*moduleConfig.mqtt.address) {
-            serverAddr = moduleConfig.mqtt.address; // Override the default
-            mqttUsername =
-                moduleConfig.mqtt.username; // do not use the hardcoded credentials for a custom mqtt server
+            serverAddr = moduleConfig.mqtt.address;    // Override the default
+            mqttUsername = moduleConfig.mqtt.username; // do not use the hardcoded credentials for a custom mqtt server
             mqttPassword = moduleConfig.mqtt.password;
         } else {
             // we are using the default server.  Use the hardcoded credentials by default, but allow overriding
@@ -155,7 +155,7 @@ void MQTT::reconnect()
         if (connected) {
             DEBUG_MSG("MQTT connected\n");
             enabled = true; // Start running background process again
-            runASAP = true;
+            getController().blockDelay();
 
             /// FIXME, include more information in the status text
             bool ok = pubSub.publish(myStatus.c_str(), "online", true);
@@ -261,7 +261,8 @@ void MQTT::onSend(const MeshPacket &mp, ChannelIndex chIndex)
             auto jsonString = this->downstreamPacketToJson((MeshPacket *)&mp);
             if (jsonString.length() != 0) {
                 String topicJson = jsonTopic + channelId + "/" + owner.id;
-                DEBUG_MSG("JSON publish message to %s, %u bytes: %s\n", topicJson.c_str(), jsonString.length(), jsonString.c_str());
+                DEBUG_MSG("JSON publish message to %s, %u bytes: %s\n", topicJson.c_str(), jsonString.length(),
+                          jsonString.c_str());
                 pubSub.publish(topicJson.c_str(), jsonString.c_str(), false);
             }
         }
@@ -339,12 +340,10 @@ std::string MQTT::downstreamPacketToJson(MeshPacket *mp)
             memset(&scratch, 0, sizeof(scratch));
             if (pb_decode_from_bytes(mp->decoded.payload.bytes, mp->decoded.payload.size, &User_msg, &scratch)) {
                 decoded = &scratch;
-                msgPayload = Json::object{
-                    {"id", decoded->id},
-                    {"longname", decoded->long_name},
-                    {"shortname", decoded->short_name},
-                    {"hardware", decoded->hw_model}
-                };
+                msgPayload = Json::object{{"id", decoded->id},
+                                          {"longname", decoded->long_name},
+                                          {"shortname", decoded->short_name},
+                                          {"hardware", decoded->hw_model}};
 
             } else
                 DEBUG_MSG("Error decoding protobuf for nodeinfo message!\n");
@@ -359,13 +358,11 @@ std::string MQTT::downstreamPacketToJson(MeshPacket *mp)
             memset(&scratch, 0, sizeof(scratch));
             if (pb_decode_from_bytes(mp->decoded.payload.bytes, mp->decoded.payload.size, &Position_msg, &scratch)) {
                 decoded = &scratch;
-                msgPayload = Json::object{
-                    {"time", (int)decoded->time},
-                    {"pos_timestamp", (int)decoded->timestamp},
-                    {"latitude_i", (int)decoded->latitude_i}, 
-                    {"longitude_i", (int)decoded->longitude_i}, 
-                    {"altitude", (int)decoded->altitude}
-                };
+                msgPayload = Json::object{{"time", (int)decoded->time},
+                                          {"pos_timestamp", (int)decoded->timestamp},
+                                          {"latitude_i", (int)decoded->latitude_i},
+                                          {"longitude_i", (int)decoded->longitude_i},
+                                          {"altitude", (int)decoded->altitude}};
             } else {
                 DEBUG_MSG("Error decoding protobuf for position message!\n");
             }
@@ -387,8 +384,8 @@ std::string MQTT::downstreamPacketToJson(MeshPacket *mp)
                     {"description", decoded->description},
                     {"expire", (int)decoded->expire},
                     {"locked", decoded->locked},
-                    {"latitude_i", (int)decoded->latitude_i}, 
-                    {"longitude_i", (int)decoded->longitude_i}, 
+                    {"latitude_i", (int)decoded->latitude_i},
+                    {"longitude_i", (int)decoded->longitude_i},
                 };
             } else {
                 DEBUG_MSG("Error decoding protobuf for position message!\n");
@@ -402,16 +399,14 @@ std::string MQTT::downstreamPacketToJson(MeshPacket *mp)
     }
 
     // assemble the final jsonObj
-    Json jsonObj = Json::object{
-        {"id", Json((int)mp->id)},
-        {"timestamp", Json((int)mp->rx_time)},
-        {"to", Json((int)mp->to)},
-        {"from", Json((int)mp->from)},
-        {"channel", Json((int)mp->channel)},
-        {"type", msgType.c_str()},
-        {"sender", owner.id},
-        {"payload", msgPayload}
-    };
+    Json jsonObj = Json::object{{"id", Json((int)mp->id)},
+                                {"timestamp", Json((int)mp->rx_time)},
+                                {"to", Json((int)mp->to)},
+                                {"from", Json((int)mp->from)},
+                                {"channel", Json((int)mp->channel)},
+                                {"type", msgType.c_str()},
+                                {"sender", owner.id},
+                                {"payload", msgPayload}};
 
     // serialize and return it
     std::string jsonStr = jsonObj.dump();

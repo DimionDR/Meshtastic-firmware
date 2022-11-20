@@ -144,8 +144,7 @@ void Router::abortSendAndNak(Routing_Error err, MeshPacket *p)
 void Router::setReceivedMessage()
 {
     // DEBUG_MSG("set interval to ASAP\n");
-    setInterval(0); // Run ASAP, so we can figure out our correct sleep time
-    runASAP = true;
+    getController().blockDelay();
 }
 
 ErrorCode Router::sendLocal(MeshPacket *p, RxSource src)

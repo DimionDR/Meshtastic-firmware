@@ -29,8 +29,8 @@
 #include <Wire.h>
 // #include <driver/rtc_io.h>
 
-#include "mesh/http/WiFiAPClient.h"
 #include "mesh/eth/ethClient.h"
+#include "mesh/http/WiFiAPClient.h"
 
 #ifdef ARCH_ESP32
 #include "mesh/http/WebServer.h"
@@ -98,7 +98,8 @@ bool eink_found = true;
 bool pmu_found;
 
 // Array map of sensor types (as array index) and i2c address as value we'll find in the i2c scan
-uint8_t nodeTelemetrySensorsMap[_TelemetrySensorType_MAX + 1] = { 0 }; // one is enough, missing elements will be initialized to 0 anyway.
+uint8_t nodeTelemetrySensorsMap[_TelemetrySensorType_MAX + 1] = {
+    0}; // one is enough, missing elements will be initialized to 0 anyway.
 
 Router *router = NULL; // Users of router don't care what sort of subclass implements that API
 
@@ -168,7 +169,7 @@ void setup()
 #endif
 
 #ifdef DEBUG_PORT
-        consoleInit(); // Set serial baud rate and init our mesh console
+    consoleInit(); // Set serial baud rate and init our mesh console
 #endif
 
     DEBUG_MSG("\n\n//\\ E S H T /\\ S T / C\n\n");
@@ -238,7 +239,6 @@ void setup()
     digitalWrite(PIN_3V3_EN, 1);
 #endif
 
-
     // Currently only the tbeam has a PMU
     // PMU initialization needs to be placed before scanI2Cdevice
     power = new Power();
@@ -246,12 +246,11 @@ void setup()
     powerStatus.observe(&power->newStatus);
     power->setup(); // Must be after status handler is installed, so that handler gets notified of the initial configuration
 
-
 #ifdef LILYGO_TBEAM_S3_CORE
     // In T-Beam-S3-core, the I2C device cannot be scanned before power initialization, otherwise the device will be stuck
     // PCF8563 RTC in tbeam-s3 uses Wire1 to share I2C bus
     Wire1.beginTransmission(PCF8563_RTC);
-    if (Wire1.endTransmission() == 0){
+    if (Wire1.endTransmission() == 0) {
         rtc_found = PCF8563_RTC;
         DEBUG_MSG("PCF8563 RTC found\n");
     }
@@ -263,7 +262,7 @@ void setup()
 #ifdef HAS_SDCARD
     setupSDCard();
 #endif
-    
+
 #ifdef RAK4630
     // scanEInkDevice();
 #endif
@@ -297,11 +296,11 @@ void setup()
     nodeDB.init();
 
     playStartMelody();
-    
+
     // fixed screen override?
     if (config.display.oled != Config_DisplayConfig_OledType_OLED_AUTO)
         screen_model = config.display.oled;
-    
+
     // Init our SPI controller (must be before screen and lora)
     initSPI();
 #ifndef ARCH_ESP32
@@ -491,14 +490,8 @@ void setup()
 uint32_t rebootAtMsec;   // If not zero we will reboot at this time (used to reboot shortly after the update completes)
 uint32_t shutdownAtMsec; // If not zero we will shutdown at this time (used to shutdown from python or mobile client)
 
-// If a thread does something that might need for it to be rescheduled ASAP it can set this flag
-// This will supress the current delay and instead try to run ASAP.
-bool runASAP;
-
 void loop()
 {
-    runASAP = false;
-
     // axpDebugOutput.loop();
 
     // heap_caps_check_integrity_all(true); // FIXME - disable this expensive check
@@ -522,9 +515,6 @@ void loop()
     }
 #endif
 
-    // TODO: This should go into a thread handled by FreeRTOS.
-    // handleWebResponse();
-
     service.loop();
 
     long delayMsec = OSThread::getController().runOrDelay();
@@ -534,9 +524,11 @@ void loop()
                   mainController.nextThread->tillRun(millis())); */
 
     // We want to sleep as long as possible here - because it saves power
-    if (!runASAP && loopCanSleep()) {
+    if (!OSThread::getController().isDelayBlocked() && loopCanSleep()) {
         // if(delayMsec > 100) DEBUG_MSG("sleeping %ld\n", delayMsec);
         mainDelay.delay(delayMsec);
+    } else {
+        OSThread::getController().unblockDelay();
     }
     // if (didWake) DEBUG_MSG("wake!\n");
 }

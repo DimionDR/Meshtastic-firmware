@@ -1,5 +1,5 @@
-#include "configuration.h"
 #include "OSThread.h"
+#include "configuration.h"
 #include <assert.h>
 
 namespace concurrency
@@ -16,25 +16,46 @@ bool OSThread::showWaiting = false;
 
 const OSThread *OSThread::currentThread;
 
-
 InterruptableDelay mainDelay;
 
-class NamedThreadController: public ThreadController
+ExtendedThreadController::ExtendedThreadController(String name) : runASAP(false)
 {
-    public:
-      NamedThreadController(String name) { ThreadName = name; }
-};
+    ThreadName = name;
+}
+void ExtendedThreadController::blockDelay(void)
+{
+    runASAP = true;
+}
 
-static NamedThreadController mainController("mainController");
+long ExtendedThreadController::runOrDelay()
+{
 
-ThreadController& OSThread::getController(void)
+    long res = ThreadController::runOrDelay();
+
+    if (runASAP) {
+        res = 0;
+    }
+    return res;
+}
+
+bool ExtendedThreadController::isDelayBlocked(void)
+{
+    return runASAP;
+}
+
+void ExtendedThreadController::unblockDelay(void)
+{
+    runASAP = false;
+}
+
+static ExtendedThreadController mainController("mainController");
+
+ExtendedThreadController &OSThread::getController(void)
 {
     return mainController;
 }
 
-
-OSThread::OSThread(const char *_name, uint32_t period)
-    : Thread(NULL, period)
+OSThread::OSThread(const char *_name, uint32_t period) : Thread(NULL, period)
 {
     assertIsSetup();
 
@@ -42,7 +63,6 @@ OSThread::OSThread(const char *_name, uint32_t period)
 
     bool added = OSThread::getController().add(this);
     assert(added);
-
 }
 
 OSThread::~OSThread()

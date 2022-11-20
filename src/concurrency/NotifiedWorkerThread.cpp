@@ -1,5 +1,5 @@
-#include "configuration.h"
 #include "NotifiedWorkerThread.h"
+#include "configuration.h"
 #include "main.h"
 #include <assert.h>
 
@@ -28,8 +28,7 @@ IRAM_ATTR bool NotifiedWorkerThread::notifyCommon(uint32_t v, bool overwrite)
 {
     if (overwrite || notification == 0) {
         enabled = true;
-        setInterval(0); // Run ASAP
-        runASAP = true;
+       getController().blockDelay();
 
         notification = v;
         if (debugNotification)
@@ -81,11 +80,9 @@ void NotifiedWorkerThread::checkNotification()
     }
 }
 
-
-
 int32_t NotifiedWorkerThread::runOnce()
 {
-    enabled = false;  // Only run once per notification
+    enabled = false; // Only run once per notification
     checkNotification();
 
     return RUN_SAME;

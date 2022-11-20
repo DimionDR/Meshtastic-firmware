@@ -14,6 +14,23 @@ extern InterruptableDelay mainDelay;
 
 #define RUN_SAME -1
 
+class ExtendedThreadController : public ThreadController
+{
+  private:
+    bool runASAP;
+
+  public:
+    ExtendedThreadController(String name);
+    // If a thread does something that might need for it to be rescheduled ASAP it can call this function
+    // This will suppress the current delay and instead try to run ASAP.
+    void blockDelay(void);
+    void unblockDelay(void);
+
+    long runOrDelay();
+
+    bool isDelayBlocked(void);
+};
+
 /**
  * @brief Base threading
  *
@@ -53,7 +70,7 @@ class OSThread : public Thread
      */
     void setIntervalFromNow(unsigned long _interval);
 
-    static ThreadController& getController(void);
+    static ExtendedThreadController &getController(void);
 
   protected:
     /**
