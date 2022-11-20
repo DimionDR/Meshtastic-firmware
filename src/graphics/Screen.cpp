@@ -917,6 +917,7 @@ void Screen::handleSetOn(bool on)
 
 void Screen::setup()
 {
+    serialSinceMsec = millis();
     // We don't set useDisplay until setup() is called, because some boards have a declaration of this object but the device
     // is never found when probing i2c and therefore we don't call setup and never want to do (invalid) accesses to this device.
     useDisplay = true;

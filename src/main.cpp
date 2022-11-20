@@ -64,7 +64,7 @@
 using namespace concurrency;
 
 // We always create a screen object, but we only init it if we find the hardware
-graphics::Screen *screen;
+graphics::Screen *screen = NULL;
 
 // Global power status
 meshtastic::PowerStatus powerStatus;
@@ -94,8 +94,6 @@ ATECCX08A atecc;
 #endif
 
 bool eink_found = true;
-
-uint32_t serialSinceMsec;
 
 bool pmu_found;
 
@@ -172,8 +170,6 @@ void setup()
 #ifdef DEBUG_PORT
         consoleInit(); // Set serial baud rate and init our mesh console
 #endif
-
-    serialSinceMsec = millis();
 
     DEBUG_MSG("\n\n//\\ E S H T /\\ S T / C\n\n");
 

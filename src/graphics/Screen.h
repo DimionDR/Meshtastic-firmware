@@ -338,6 +338,8 @@ class Screen : public concurrency::OSThread
 
     /// Holds state for debug information
     DebugInfo debugInfo;
+    /// 
+    uint32_t serialSinceMsec;
 
     /// Display device
 
