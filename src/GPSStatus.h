@@ -150,4 +150,4 @@ class GPSStatus : public Status
 
 } // namespace meshtastic
 
-extern meshtastic::GPSStatus *gpsStatus;
+extern meshtastic::GPSStatus gpsStatus;

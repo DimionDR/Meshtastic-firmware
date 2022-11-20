@@ -67,10 +67,10 @@ int32_t RangeTestModule::runOnce()
                 // If sender
                 DEBUG_MSG("Range Test Module - Sending heartbeat every %d ms\n", (senderHeartbeat));
 
-                DEBUG_MSG("gpsStatus->getLatitude()     %d\n", gpsStatus->getLatitude());
-                DEBUG_MSG("gpsStatus->getLongitude()    %d\n", gpsStatus->getLongitude());
-                DEBUG_MSG("gpsStatus->getHasLock()      %d\n", gpsStatus->getHasLock());
-                DEBUG_MSG("gpsStatus->getDOP()          %d\n", gpsStatus->getDOP());
+                DEBUG_MSG("gpsStatus.getLatitude()     %d\n", gpsStatus.getLatitude());
+                DEBUG_MSG("gpsStatus.getLongitude()    %d\n", gpsStatus.getLongitude());
+                DEBUG_MSG("gpsStatus.getHasLock()      %d\n", gpsStatus.getHasLock());
+                DEBUG_MSG("gpsStatus.getDOP()          %d\n", gpsStatus.getDOP());
                 DEBUG_MSG("fixed_position()             %d\n", config.position.fixed_position);
 
                 // Only send packets if the channel is less than 25% utilized.
@@ -205,10 +205,10 @@ bool RangeTestModuleRadio::appendFile(const MeshPacket &mp)
         DEBUG_MSG("n->position.latitude_i    %d\n", n->position.latitude_i);
         DEBUG_MSG("n->position.longitude_i   %d\n", n->position.longitude_i);
         DEBUG_MSG("---- Current device location information:\n");
-        DEBUG_MSG("gpsStatus->getLatitude()     %d\n", gpsStatus->getLatitude());
-        DEBUG_MSG("gpsStatus->getLongitude()    %d\n", gpsStatus->getLongitude());
-        DEBUG_MSG("gpsStatus->getHasLock()      %d\n", gpsStatus->getHasLock());
-        DEBUG_MSG("gpsStatus->getDOP()          %d\n", gpsStatus->getDOP());
+        DEBUG_MSG("gpsStatus.getLatitude()     %d\n", gpsStatus.getLatitude());
+        DEBUG_MSG("gpsStatus.getLongitude()    %d\n", gpsStatus.getLongitude());
+        DEBUG_MSG("gpsStatus.getHasLock()      %d\n", gpsStatus.getHasLock());
+        DEBUG_MSG("gpsStatus.getDOP()          %d\n", gpsStatus.getDOP());
         DEBUG_MSG("-----------------------------------------\n");
     */
     if (!FSBegin()) {
@@ -271,15 +271,15 @@ bool RangeTestModuleRadio::appendFile(const MeshPacket &mp)
     fileToAppend.printf("%s,", n->user.long_name);                // Long Name
     fileToAppend.printf("%f,", n->position.latitude_i * 1e-7);    // Sender Lat
     fileToAppend.printf("%f,", n->position.longitude_i * 1e-7);   // Sender Long
-    fileToAppend.printf("%f,", gpsStatus->getLatitude() * 1e-7);  // RX Lat
-    fileToAppend.printf("%f,", gpsStatus->getLongitude() * 1e-7); // RX Long
-    fileToAppend.printf("%d,", gpsStatus->getAltitude());         // RX Altitude
+    fileToAppend.printf("%f,", gpsStatus.getLatitude() * 1e-7);  // RX Lat
+    fileToAppend.printf("%f,", gpsStatus.getLongitude() * 1e-7); // RX Long
+    fileToAppend.printf("%d,", gpsStatus.getAltitude());         // RX Altitude
 
     fileToAppend.printf("%f,", mp.rx_snr); // RX SNR
 
-    if (n->position.latitude_i && n->position.longitude_i && gpsStatus->getLatitude() && gpsStatus->getLongitude()) {
+    if (n->position.latitude_i && n->position.longitude_i && gpsStatus.getLatitude() && gpsStatus.getLongitude()) {
         float distance = GeoCoord::latLongToMeter(n->position.latitude_i * 1e-7, n->position.longitude_i * 1e-7,
-                                                  gpsStatus->getLatitude() * 1e-7, gpsStatus->getLongitude() * 1e-7);
+                                                  gpsStatus.getLatitude() * 1e-7, gpsStatus.getLongitude() * 1e-7);
         fileToAppend.printf("%f,", distance); // Distance in meters
     } else {
         fileToAppend.printf("0,");

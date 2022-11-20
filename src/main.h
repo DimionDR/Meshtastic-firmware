@@ -34,8 +34,8 @@ extern int TCPPort; // set by Portduino
 extern graphics::Screen *screen;
 // extern Observable<meshtastic::PowerStatus> newPowerStatus; //TODO: move this to main-esp32.cpp somehow or a helper class
 
-// extern meshtastic::PowerStatus *powerStatus;
-// extern meshtastic::GPSStatus *gpsStatus;
+// extern meshtastic::PowerStatus powerStatus;
+// extern meshtastic::GPSStatus gpsStatus;
 // extern meshtastic::NodeStatusHandler *nodeStatusHandler;
 
 // Return a human readable string of the form "Meshtastic_ab13"

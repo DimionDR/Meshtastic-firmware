@@ -989,7 +989,7 @@ void Screen::setup()
 
     // Subscribe to status updates
     powerStatusObserver.observe(&powerStatus.onNewStatus);
-    gpsStatusObserver.observe(&gpsStatus->onNewStatus);
+    gpsStatusObserver.observe(&gpsStatus.onNewStatus);
     nodeStatusObserver.observe(&nodeStatus->onNewStatus);
     if (textMessageModule)
         textMessageObserver.observe(textMessageModule);
@@ -1372,7 +1372,7 @@ void DebugInfo::drawFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16
     // Display nodes status
     drawNodes(display, x + (SCREEN_WIDTH * 0.25), y + 2, nodeStatus);
     // Display GPS status
-    drawGPS(display, x + (SCREEN_WIDTH * 0.63), y + 2, gpsStatus);
+    drawGPS(display, x + (SCREEN_WIDTH * 0.63), y + 2, &gpsStatus);
 
     // Draw the channel name
     display->drawString(x, y + FONT_HEIGHT_SMALL, channelStr);
@@ -1617,10 +1617,10 @@ void DebugInfo::drawFrameSettings(OLEDDisplay *display, OLEDDisplayUiState *stat
     // Line 3
     if (config.display.gps_format !=
         Config_DisplayConfig_GpsCoordinateFormat_DMS) // if DMS then don't draw altitude
-        drawGPSAltitude(display, x, y + FONT_HEIGHT_SMALL * 2, gpsStatus);
+        drawGPSAltitude(display, x, y + FONT_HEIGHT_SMALL * 2, &gpsStatus);
 
     // Line 4
-    drawGPScoordinates(display, x, y + FONT_HEIGHT_SMALL * 3, gpsStatus);
+    drawGPScoordinates(display, x, y + FONT_HEIGHT_SMALL * 3, &gpsStatus);
 
     /* Display a heartbeat pixel that blinks every time the frame is redrawn */
 #ifdef SHOW_REDRAWS

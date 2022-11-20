@@ -70,7 +70,7 @@ graphics::Screen *screen;
 meshtastic::PowerStatus powerStatus;
 
 // Global GPS status
-meshtastic::GPSStatus *gpsStatus = new meshtastic::GPSStatus();
+meshtastic::GPSStatus gpsStatus;
 
 // Global Node status
 meshtastic::NodeStatus *nodeStatus = new meshtastic::NodeStatus();
@@ -326,7 +326,7 @@ void setup()
     gps = createGps();
 
     if (gps)
-        gpsStatus->observe(&gps->newStatus);
+        gpsStatus.observe(&gps->newStatus);
     else
         DEBUG_MSG("Warning: No GPS found - running without GPS\n");
 
