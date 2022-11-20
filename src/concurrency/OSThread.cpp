@@ -16,19 +16,22 @@ bool OSThread::showWaiting = false;
 
 const OSThread *OSThread::currentThread;
 
-ThreadController mainController;
+
 InterruptableDelay mainDelay;
 
+class NamedThreadController: public ThreadController
+{
+    public:
+      NamedThreadController(String name) { ThreadName = name; }
+};
+
+static NamedThreadController mainController("mainController");
 
 ThreadController& OSThread::getController(void)
 {
     return mainController;
 }
 
-void OSThread::setup()
-{
-    OSThread::getController().ThreadName = "mainController";
-}
 
 OSThread::OSThread(const char *_name, uint32_t period)
     : Thread(NULL, period)

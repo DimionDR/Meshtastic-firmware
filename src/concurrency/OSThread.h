@@ -48,8 +48,6 @@ class OSThread : public Thread
 
     virtual bool shouldRun(unsigned long time);
 
-    static void setup();
-
     /**
      * Wait a specified number msecs starting from the current time (rather than the last time we were run)
      */

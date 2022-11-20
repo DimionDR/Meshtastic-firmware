@@ -206,8 +206,6 @@ void setup()
 #endif
 #endif
 
-    OSThread::setup();
-
     ledPeriodic = new Periodic("Blink", ledBlinker);
 
     fsInit();
