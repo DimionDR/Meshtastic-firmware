@@ -19,28 +19,32 @@ const OSThread *OSThread::currentThread;
 ThreadController mainController;
 InterruptableDelay mainDelay;
 
-void OSThread::setup()
+
+ThreadController& OSThread::getController(void)
 {
-    mainController.ThreadName = "mainController";
+    return mainController;
 }
 
-OSThread::OSThread(const char *_name, uint32_t period, ThreadController *_controller)
-    : Thread(NULL, period), controller(_controller)
+void OSThread::setup()
+{
+    OSThread::getController().ThreadName = "mainController";
+}
+
+OSThread::OSThread(const char *_name, uint32_t period)
+    : Thread(NULL, period)
 {
     assertIsSetup();
 
     ThreadName = _name;
 
-    if (controller) {
-        bool added = controller->add(this);
-        assert(added);
-    }
+    bool added = OSThread::getController().add(this);
+    assert(added);
+
 }
 
 OSThread::~OSThread()
 {
-    if (controller)
-        controller->remove(this);
+    OSThread::getController().remove(this);
 }
 
 /**

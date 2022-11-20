@@ -529,7 +529,7 @@ void loop()
 
     service.loop();
 
-    long delayMsec = mainController.runOrDelay();
+    long delayMsec = OSThread::getController().runOrDelay();
 
     /* if (mainController.nextThread && delayMsec)
         DEBUG_MSG("Next %s in %ld\n", mainController.nextThread->ThreadName.c_str(),

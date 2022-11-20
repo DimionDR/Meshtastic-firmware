@@ -10,7 +10,6 @@
 namespace concurrency
 {
 
-extern ThreadController mainController;
 extern InterruptableDelay mainDelay;
 
 #define RUN_SAME -1
@@ -30,8 +29,6 @@ extern InterruptableDelay mainDelay;
  */
 class OSThread : public Thread
 {
-    ThreadController *controller;
-
     /// Show debugging info for disabled threads
     static bool showDisabled;
 
@@ -45,7 +42,7 @@ class OSThread : public Thread
     /// For debug printing only (might be null)
     static const OSThread *currentThread;
 
-    OSThread(const char *name, uint32_t period = 0, ThreadController *controller = &mainController);
+    OSThread(const char *name, uint32_t period = 0);
 
     virtual ~OSThread();
 
@@ -57,6 +54,8 @@ class OSThread : public Thread
      * Wait a specified number msecs starting from the current time (rather than the last time we were run)
      */
     void setIntervalFromNow(unsigned long _interval);
+
+    static ThreadController& getController(void);
 
   protected:
     /**
