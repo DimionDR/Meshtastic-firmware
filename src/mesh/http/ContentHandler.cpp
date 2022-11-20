@@ -632,11 +632,11 @@ void handleReport(HTTPRequest *req, HTTPResponse *res)
                                       {"fs_free", String(FSCom.totalBytes() - FSCom.usedBytes()).c_str()}};
 
     // data->power
-    Json jsonObjPower = Json::object{{"battery_percent", Json(powerStatus->getBatteryChargePercent())},
-                                     {"battery_voltage_mv", Json(powerStatus->getBatteryVoltageMv())},
-                                     {"has_battery", BoolToString(powerStatus->getHasBattery())},
-                                     {"has_usb", BoolToString(powerStatus->getHasUSB())},
-                                     {"is_charging", BoolToString(powerStatus->getIsCharging())}};
+    Json jsonObjPower = Json::object{{"battery_percent", Json(powerStatus.getBatteryChargePercent())},
+                                     {"battery_voltage_mv", Json(powerStatus.getBatteryVoltageMv())},
+                                     {"has_battery", BoolToString(powerStatus.getHasBattery())},
+                                     {"has_usb", BoolToString(powerStatus.getHasUSB())},
+                                     {"is_charging", BoolToString(powerStatus.getIsCharging())}};
 
     // data->device
     Json jsonObjDevice = Json::object{{"reboot_counter", Json(int(myNodeInfo.reboot_count))}};

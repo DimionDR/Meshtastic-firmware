@@ -91,4 +91,4 @@ class PowerStatus : public Status
 
 } // namespace meshtastic
 
-extern meshtastic::PowerStatus *powerStatus;
+extern meshtastic::PowerStatus powerStatus;

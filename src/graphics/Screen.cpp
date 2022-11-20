@@ -988,7 +988,7 @@ void Screen::setup()
     serialSinceMsec = millis();
 
     // Subscribe to status updates
-    powerStatusObserver.observe(&powerStatus->onNewStatus);
+    powerStatusObserver.observe(&powerStatus.onNewStatus);
     gpsStatusObserver.observe(&gpsStatus->onNewStatus);
     nodeStatusObserver.observe(&nodeStatus->onNewStatus);
     if (textMessageModule)
@@ -1365,10 +1365,10 @@ void DebugInfo::drawFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16
     }
 
     // Display power status
-    if (powerStatus->getHasBattery())
-        drawBattery(display, x, y + 2, imgBattery, powerStatus);
-    else if (powerStatus->knowsUSB())
-        display->drawFastImage(x, y + 2, 16, 8, powerStatus->getHasUSB() ? imgUSB : imgPower);
+    if (powerStatus.getHasBattery())
+        drawBattery(display, x, y + 2, imgBattery, &powerStatus);
+    else if (powerStatus.knowsUSB())
+        display->drawFastImage(x, y + 2, 16, 8, powerStatus.getHasUSB() ? imgUSB : imgPower);
     // Display nodes status
     drawNodes(display, x + (SCREEN_WIDTH * 0.25), y + 2, nodeStatus);
     // Display GPS status
@@ -1522,12 +1522,12 @@ void DebugInfo::drawFrameSettings(OLEDDisplay *display, OLEDDisplayUiState *stat
     display->setTextAlignment(TEXT_ALIGN_LEFT);
 
     char batStr[20];
-    if (powerStatus->getHasBattery()) {
-        int batV = powerStatus->getBatteryVoltageMv() / 1000;
-        int batCv = (powerStatus->getBatteryVoltageMv() % 1000) / 10;
+    if (powerStatus.getHasBattery()) {
+        int batV = powerStatus.getBatteryVoltageMv() / 1000;
+        int batCv = (powerStatus.getBatteryVoltageMv() % 1000) / 10;
 
-        snprintf(batStr, sizeof(batStr), "B %01d.%02dV %3d%% %c%c", batV, batCv, powerStatus->getBatteryChargePercent(),
-                 powerStatus->getIsCharging() ? '+' : ' ', powerStatus->getHasUSB() ? 'U' : ' ');
+        snprintf(batStr, sizeof(batStr), "B %01d.%02dV %3d%% %c%c", batV, batCv, powerStatus.getBatteryChargePercent(),
+                 powerStatus.getIsCharging() ? '+' : ' ', powerStatus.getHasUSB() ? 'U' : ' ');
 
         // Line 1
         display->drawString(x, y, batStr);

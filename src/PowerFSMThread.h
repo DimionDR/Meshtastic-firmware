@@ -24,7 +24,7 @@ class PowerFSMThread : public OSThread
         auto state = powerFSM.getState();
         canSleep = (state != &statePOWER) && (state != &stateSERIAL);
 
-        if (powerStatus->getHasUSB()) {
+        if (powerStatus.getHasUSB()) {
             timeLastPowered = millis();
         } else if (config.power.on_battery_shutdown_after_secs > 0 &&
                    millis() >

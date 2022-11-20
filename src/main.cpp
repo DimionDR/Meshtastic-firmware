@@ -67,7 +67,7 @@ using namespace concurrency;
 graphics::Screen *screen;
 
 // Global power status
-meshtastic::PowerStatus *powerStatus = new meshtastic::PowerStatus();
+meshtastic::PowerStatus powerStatus;
 
 // Global GPS status
 meshtastic::GPSStatus *gpsStatus = new meshtastic::GPSStatus();
@@ -130,7 +130,7 @@ static int32_t ledBlinker()
     setLed(ledOn);
 
     // have a very sparse duty cycle of LED being on, unless charging, then blink 0.5Hz square wave rate to indicate that
-    return powerStatus->getIsCharging() ? 1000 : (ledOn ? 1 : 1000);
+    return powerStatus.getIsCharging() ? 1000 : (ledOn ? 1 : 1000);
 }
 
 uint32_t timeLastPowered = 0;
@@ -248,8 +248,8 @@ void setup()
     // Currently only the tbeam has a PMU
     // PMU initialization needs to be placed before scanI2Cdevice
     power = new Power();
-    power->setStatusHandler(powerStatus);
-    powerStatus->observe(&power->newStatus);
+    power->setStatusHandler(&powerStatus);
+    powerStatus.observe(&power->newStatus);
     power->setup(); // Must be after status handler is installed, so that handler gets notified of the initial configuration
 
 

@@ -243,7 +243,7 @@ NodeInfo *MeshService::refreshMyNodeInfo()
     // For the time in the position field, only set that if we have a real GPS clock
     position.time = getValidTime(RTCQualityGPS);
 
-    updateBatteryLevel(powerStatus->getBatteryChargePercent());
+    updateBatteryLevel(powerStatus.getBatteryChargePercent());
 
     return node;
 }
