@@ -295,7 +295,7 @@ void setup()
     nrf52Setup();
 #endif
     // We do this as early as possible because this loads preferences from flash
-    // but we need to do this after main cpu iniot (esp32setup), because we need the random seed set
+    // but we need to do this after main cpu init (esp32setup), because we need the random seed set
     nodeDB.init();
 
     playStartMelody();

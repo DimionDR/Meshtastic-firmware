@@ -16,13 +16,12 @@ bool OSThread::showWaiting = false;
 
 const OSThread *OSThread::currentThread;
 
-ThreadController mainController, timerController;
+ThreadController mainController;
 InterruptableDelay mainDelay;
 
 void OSThread::setup()
 {
     mainController.ThreadName = "mainController";
-    timerController.ThreadName = "timerController";
 }
 
 OSThread::OSThread(const char *_name, uint32_t period, ThreadController *_controller)
