@@ -66,13 +66,14 @@ static FrameCallback normalFrames[MAX_NUM_NODES + NUM_EXTRA_FRAMES];
 static uint32_t targetFramerate = IDLE_FRAMERATE;
 static char btPIN[16] = "888888";
 
-uint32_t logo_timeout = 5000; // 4 seconds for EACH logo
-    
+static uint32_t logo_timeout = 5000; // 4 seconds for EACH logo
+
 // This image definition is here instead of images.h because it's modified dynamically by the drawBattery function
-uint8_t imgBattery[16] = {0xFF, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0xE7, 0x3C};
+static uint8_t imgBattery[16] = {0xFF, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0xE7, 0x3C};
 
 // Threshold values for the GPS lock accuracy bar display
-uint32_t dopThresholds[5] = {2000, 1000, 500, 200, 100};
+#define DOP_THRESHOLDS_SZ (5u)
+static const uint32_t dopThresholds[DOP_THRESHOLDS_SZ] = {2000, 1000, 500, 200, 100};
 
 // At some point, we're going to ask all of the modules if they would like to display a screen frame
 // we'll need to hold onto pointers for the modules that can draw a frame.
@@ -82,7 +83,7 @@ std::vector<MeshModule *> moduleFrames;
 static char ourId[5];
 
 // GeoCoord object for the screen
-GeoCoord geoCoord;
+static GeoCoord geoCoord;
 
 #ifdef SHOW_REDRAWS
 static bool heartbeat = false;
@@ -115,7 +116,6 @@ static uint16_t displayWidth, displayHeight;
 #define FONT_HEIGHT_LARGE fontHeight(FONT_LARGE)
 
 #define getStringCenteredX(s) ((SCREEN_WIDTH - display->getStringWidth(s)) / 2)
-
 
 /**
  * Draw the icon with extra info printed around the corners
@@ -234,8 +234,8 @@ static void drawWelcomeScreen(OLEDDisplay *display, OLEDDisplayUiState *state, i
     display->drawString(64 + x, y, "//\\ E S H T /\\ S T / C");
     display->drawString(64 + x, y + FONT_HEIGHT_SMALL, getDeviceName());
     display->setTextAlignment(TEXT_ALIGN_LEFT);
-    
-    if ((millis() / 10000) % 2) {
+
+    if ((millis() / 10000u) % 2u) {
         display->drawString(x, y + FONT_HEIGHT_SMALL * 2 - 3, "Set the region using the");
         display->drawString(x, y + FONT_HEIGHT_SMALL * 3 - 3, "Meshtastic Android, iOS,");
         display->drawString(x, y + FONT_HEIGHT_SMALL * 4 - 3, "Flasher or CLI client.");
@@ -296,7 +296,7 @@ static void drawFrameBluetooth(OLEDDisplay *display, OLEDDisplayUiState *state, 
     display->setTextAlignment(TEXT_ALIGN_LEFT);
     display->drawString(12 + x, 26 + y, displayPin->substring(0, 3));
     display->drawString(72 + x, 26 + y, displayPin->substring(3, 6));
-    
+
     display->setTextAlignment(TEXT_ALIGN_CENTER);
     display->setFont(FONT_SMALL);
     char buf[30];
@@ -355,8 +355,7 @@ static void drawCriticalFaultFrame(OLEDDisplay *display, OLEDDisplayUiState *sta
 // Ignore messages orginating from phone (from the current node 0x0) unless range test or store and forward module are enabled
 static bool shouldDrawMessage(const MeshPacket *packet)
 {
-    return packet->from != 0 && !moduleConfig.range_test.enabled &&
-           !moduleConfig.store_forward.enabled;
+    return packet->from != 0 && !moduleConfig.range_test.enabled && !moduleConfig.store_forward.enabled;
 }
 
 /// Draw the last text message we received
@@ -443,7 +442,7 @@ static void drawBattery(OLEDDisplay *display, int16_t x, int16_t y, uint8_t *img
     static const uint8_t lightning[8] = {0xA1, 0xA1, 0xA5, 0xAD, 0xB5, 0xA5, 0x85, 0x85};
     // Clear the bar area on the battery image
     for (int i = 1; i < 14; i++) {
-        imgBuffer[i] = 0x81;
+        imgBuffer[i] = 0x81u;
     }
     // If charging, draw a charging indicator
     if (powerStatus->getIsCharging()) {
@@ -488,11 +487,11 @@ static void drawGPS(OLEDDisplay *display, int16_t x, int16_t y, const GPSStatus 
         uint8_t bar[2] = {0};
 
         // Draw DOP signal bars
-        for (int i = 0; i < 5; i++) {
+        for (unsigned i = 0; i < DOP_THRESHOLDS_SZ; i++) {
             if (gps->getDOP() <= dopThresholds[i])
-                bar[0] = ~((1 << (5 - i)) - 1);
+                bar[0] = ~((1u << (DOP_THRESHOLDS_SZ - i)) - 1u);
             else
-                bar[0] = 0b10000000;
+                bar[0] = 0b10000000u;
             // bar[1] = bar[0];
             display->drawFastImage(x + 9 + (i * 2), y, 2, 8, bar);
         }
@@ -553,7 +552,7 @@ static void drawGPScoordinates(OLEDDisplay *display, int16_t x, int16_t y, const
                         geoCoord.getMGRSNorthing());
             } else if (gpsFormat == Config_DisplayConfig_GpsCoordinateFormat_OLC) { // Open Location Code
                 geoCoord.getOLCCode(coordinateLine);
-            } else if (gpsFormat == Config_DisplayConfig_GpsCoordinateFormat_OSGR) { // Ordnance Survey Grid Reference
+            } else if (gpsFormat == Config_DisplayConfig_GpsCoordinateFormat_OSGR) {  // Ordnance Survey Grid Reference
                 if (geoCoord.getOSGRE100k() == 'I' || geoCoord.getOSGRN100k() == 'I') // OSGR is only valid around the UK region
                     sprintf(coordinateLine, "%s", "Out of Boundary");
                 else
@@ -563,7 +562,7 @@ static void drawGPScoordinates(OLEDDisplay *display, int16_t x, int16_t y, const
 
             // If fixed position, display text "Fixed GPS" alternating with the coordinates.
             if (config.position.fixed_position) {
-                if ((millis() / 10000) % 2) {
+                if ((millis() / 10000u) % 2u) {
                     display->drawString(x + (SCREEN_WIDTH - (display->getStringWidth(coordinateLine))) / 2, y, coordinateLine);
                 } else {
                     display->drawString(x + (SCREEN_WIDTH - (display->getStringWidth("Fixed GPS"))) / 2, y, "Fixed GPS");
@@ -614,8 +613,8 @@ class Point
 
     void scale(float f)
     {
-        //We use -f here to counter the flip that happens
-        //on the y axis when drawing and rotating on screen
+        // We use -f here to counter the flip that happens
+        // on the y axis when drawing and rotating on screen
         x *= f;
         y *= -f;
     }
@@ -667,22 +666,22 @@ static bool hasPosition(NodeInfo *n)
 
 static uint16_t getCompassDiam(OLEDDisplay *display)
 {
-    uint16_t diam = 0;
+    uint16_t diam;
     // get the smaller of the 2 dimensions and subtract 20
-    if(display->getWidth() > display->getHeight()) {
+    if (display->getWidth() > display->getHeight()) {
         diam = display->getHeight();
         // if 2/3 of the other size would be smaller, use that
-        if (diam > (display->getWidth() * 2 / 3)) {
-            diam = display->getWidth() * 2 / 3;
+        if (diam > (display->getWidth() * 2u / 3u)) {
+            diam = display->getWidth() * 2u / 3u;
         }
     } else {
         diam = display->getWidth();
-        if (diam > (display->getHeight() * 2 / 3)) {
-            diam = display->getHeight() * 2 / 3;
+        if (diam > (display->getHeight() * 2u / 3u)) {
+            diam = display->getHeight() * 2u / 3u;
         }
     }
-    
-    return diam - 20;
+
+    return diam - 20u;
 };
 
 /// We will skip one node - the one for us, so we just blindly loop over all
@@ -699,7 +698,7 @@ static void drawNodeHeading(OLEDDisplay *display, int16_t compassX, int16_t comp
 
     Point *arrowPoints[] = {&tip, &tail, &leftArrow, &rightArrow};
 
-    for (int i = 0; i < 4; i++) {
+    for (unsigned i = 0u; i < sizeof(arrowPoints) / sizeof(arrowPoints[0u]); i++) {
         arrowPoints[i]->rotate(headingRadian);
         arrowPoints[i]->scale(getCompassDiam(display) * 0.6);
         arrowPoints[i]->translate(compassX, compassY);
@@ -712,15 +711,15 @@ static void drawNodeHeading(OLEDDisplay *display, int16_t compassX, int16_t comp
 // Draw north
 static void drawCompassNorth(OLEDDisplay *display, int16_t compassX, int16_t compassY, float myHeading)
 {
-    //If north is supposed to be at the top of the compass we want rotation to be +0
-    if(config.display.compass_north_top)
+    // If north is supposed to be at the top of the compass we want rotation to be +0
+    if (config.display.compass_north_top)
         myHeading = -0;
-    
+
     Point N1(-0.04f, 0.65f), N2(0.04f, 0.65f);
     Point N3(-0.04f, 0.55f), N4(0.04f, 0.55f);
     Point *rosePoints[] = {&N1, &N2, &N3, &N4};
 
-    for (int i = 0; i < 4; i++) {
+    for (unsigned i = 0u; i < sizeof(rosePoints) / sizeof(rosePoints[0u]); i++) {
         // North on compass will be negative of heading
         rosePoints[i]->rotate(-myHeading);
         rosePoints[i]->scale(getCompassDiam(display));
@@ -741,7 +740,7 @@ static void drawNodeInfo(OLEDDisplay *display, OLEDDisplayUiState *state, int16_
     if (state->currentFrame != prevFrame) {
         prevFrame = state->currentFrame;
 
-        nodeIndex = (nodeIndex + 1) % nodeDB.getNumNodes();
+        nodeIndex = (nodeIndex + 1u) % nodeDB.getNumNodes();
         NodeInfo *n = nodeDB.getNodeByIndex(nodeIndex);
         if (n->num == nodeDB.getNodeNum()) {
             // Don't show our node, just skip to next
@@ -771,12 +770,12 @@ static void drawNodeInfo(OLEDDisplay *display, OLEDDisplayUiState *state, int16_
         snprintf(lastStr, sizeof(lastStr), "%u minutes ago", agoSecs / 60);
     else {
 
-        uint32_t hours_in_month = 730;
+        uint32_t hours_in_month = 730u;
 
         // Only show hours ago if it's been less than 6 months. Otherwise, we may have bad
         //   data.
-        if ((agoSecs / 60 / 60) < (hours_in_month * 6)) {
-            snprintf(lastStr, sizeof(lastStr), "%u hours ago", agoSecs / 60 / 60);
+        if ((agoSecs / 60u / 60u) < (hours_in_month * 6u)) {
+            snprintf(lastStr, sizeof(lastStr), "%u hours ago", agoSecs / 60u / 60u);
         } else {
             snprintf(lastStr, sizeof(lastStr), "unknown age");
         }
@@ -819,16 +818,17 @@ static void drawNodeInfo(OLEDDisplay *display, OLEDDisplayUiState *state, int16_
                 GeoCoord::bearing(DegD(op.latitude_i), DegD(op.longitude_i), DegD(p.latitude_i), DegD(p.longitude_i));
             // If the top of the compass is a static north then bearingToOther can be drawn on the compass directly
             // If the top of the compass is not a static north we need adjust bearingToOther based on heading
-            if(!config.display.compass_north_top)
+            if (!config.display.compass_north_top)
                 bearingToOther -= myHeading;
             drawNodeHeading(display, compassX, compassY, bearingToOther);
         }
     }
-    if (!hasNodeHeading)
+    if (!hasNodeHeading) {
         // direction to node is unknown so display question mark
         // Debug info for gps lock errors
         // DEBUG_MSG("ourNode %d, ourPos %d, theirPos %d\n", !!ourNode, ourNode && hasPosition(ourNode), hasPosition(node));
         display->drawString(compassX - FONT_HEIGHT_SMALL / 4, compassY - FONT_HEIGHT_SMALL / 2, "?");
+    }
     display->drawCircle(compassX, compassY, getCompassDiam(display) / 2);
 
     // Must be after distStr is populated
@@ -964,8 +964,8 @@ void Screen::setup()
 #ifdef SCREEN_MIRROR
     dispdev.mirrorScreen();
 #else
-    // Standard behaviour is to FLIP the screen (needed on T-Beam). If this config item is set, unflip it, and thereby logically flip it.
-    // If you have a headache now, you're welcome.
+    // Standard behaviour is to FLIP the screen (needed on T-Beam). If this config item is set, unflip it, and thereby logically
+    // flip it. If you have a headache now, you're welcome.
     if (!config.display.flip_screen) {
         dispdev.flipScreenVertically();
     }
@@ -1035,7 +1035,7 @@ int32_t Screen::runOnce()
             static const int bootOEMFrameCount = sizeof(bootOEMFrames) / sizeof(bootOEMFrames[0]);
             ui.setFrames(bootOEMFrames, bootOEMFrameCount);
             ui.update();
-#ifndef USE_EINK            
+#ifndef USE_EINK
             ui.update();
 #endif
             showingOEMBootScreen = false;
@@ -1614,8 +1614,7 @@ void DebugInfo::drawFrameSettings(OLEDDisplay *display, OLEDDisplayUiState *stat
     display->drawString(x + SCREEN_WIDTH - display->getStringWidth(chUtil), y + FONT_HEIGHT_SMALL * 1, chUtil);
 
     // Line 3
-    if (config.display.gps_format !=
-        Config_DisplayConfig_GpsCoordinateFormat_DMS) // if DMS then don't draw altitude
+    if (config.display.gps_format != Config_DisplayConfig_GpsCoordinateFormat_DMS) // if DMS then don't draw altitude
         drawGPSAltitude(display, x, y + FONT_HEIGHT_SMALL * 2, &gpsStatus);
 
     // Line 4

@@ -28,7 +28,7 @@ IRAM_ATTR bool NotifiedWorkerThread::notifyCommon(uint32_t v, bool overwrite)
 {
     if (overwrite || notification == 0) {
         enabled = true;
-       getController().blockDelay();
+        getController().blockDelay();
 
         notification = v;
         if (debugNotification)
