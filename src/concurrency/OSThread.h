@@ -20,7 +20,7 @@ class ExtendedThreadController : public ThreadController
     bool runASAP;
 
   public:
-    ExtendedThreadController(String name);
+    explicit ExtendedThreadController(String name);
     // If a thread does something that might need for it to be rescheduled ASAP it can call this function
     // This will suppress the current delay and instead try to run ASAP.
     void blockDelay(void);
