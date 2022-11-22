@@ -45,6 +45,10 @@ class GPS : private concurrency::OSThread
 
     bool hasGPS = false; // Do we have a GPS we are talking to
 
+    /// Multiple GPS instances might use the same serial port (in sequence), but we can
+    /// only init that port once.
+    static bool didSerialInit;
+
     uint8_t numSatellites = 0;
 
     CallbackObserver<GPS, void *> notifySleepObserver = CallbackObserver<GPS, void *>(this, &GPS::prepareSleep);
