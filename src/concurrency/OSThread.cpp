@@ -32,7 +32,8 @@ long ExtendedThreadController::runOrDelay()
 
     long res = ThreadController::runOrDelay();
 
-    if (runASAP) {
+    if (isDelayBlocked()) {
+        unblockDelay();
         res = 0;
     }
     return res;

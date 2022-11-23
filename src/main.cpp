@@ -519,16 +519,13 @@ void loop()
 
     long delayMsec = OSThread::getController().runOrDelay();
 
-    /* if (mainController.nextThread && delayMsec)
-        DEBUG_MSG("Next %s in %ld\n", mainController.nextThread->ThreadName.c_str(),
-                  mainController.nextThread->tillRun(millis())); */
+    // if (OSThread::getController().nextThread && delayMsec)
+    //     DEBUG_MSG("Next %s in %ld\n", OSThread::getController().nextThread->ThreadName.c_str(),
+    //               OSThread::getController().nextThread->tillRun(millis()));
 
     // We want to sleep as long as possible here - because it saves power
-    if (!OSThread::getController().isDelayBlocked() && loopCanSleep()) {
-        // if(delayMsec > 100) DEBUG_MSG("sleeping %ld\n", delayMsec);
+    if ((delayMsec > 0) && loopCanSleep()) {
+        // if (delayMsec > 50) DEBUG_MSG("sleeping %ld\n", delayMsec);
         mainDelay.delay(delayMsec);
-    } else {
-        OSThread::getController().unblockDelay();
     }
-    // if (didWake) DEBUG_MSG("wake!\n");
 }
