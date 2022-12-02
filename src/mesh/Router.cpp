@@ -144,7 +144,7 @@ void Router::abortSendAndNak(Routing_Error err, MeshPacket *p)
 void Router::setReceivedMessage()
 {
     // DEBUG_MSG("set interval to ASAP\n");
-    getController().blockDelay();
+    reschedule();
 }
 
 ErrorCode Router::sendLocal(MeshPacket *p, RxSource src)

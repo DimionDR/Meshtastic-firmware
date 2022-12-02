@@ -112,6 +112,12 @@ void OSThread::run()
     currentThread = NULL;
 }
 
+void OSThread::reschedule(void)
+{
+    setInterval(0);
+    getController().blockDelay();
+}
+
 /**
  * This flag is set **only** when setup() starts, to provide a way for us to check for sloppy static constructor calls.
  * Call assertIsSetup() to force a crash if someone tries to create an instance too early.

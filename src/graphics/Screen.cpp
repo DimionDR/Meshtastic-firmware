@@ -904,7 +904,7 @@ void Screen::handleSetOn(bool on)
             dispdev.displayOn();
             dispdev.displayOn();
             enabled = true;
-            getController().blockDelay();
+            reschedule();
         } else {
             DEBUG_MSG("Turning off screen\n");
             dispdev.displayOff();
@@ -1344,7 +1344,7 @@ void Screen::setFastFramerate()
     targetFramerate = SCREEN_TRANSITION_FRAMERATE;
 
     ui.setTargetFPS(targetFramerate);
-    getController().blockDelay();
+    reschedule();
 }
 
 void DebugInfo::drawFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_t y)

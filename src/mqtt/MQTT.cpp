@@ -120,7 +120,7 @@ void MQTT::reconnect()
 {
     if (wantsLink()) {
         // Defaults
-        int serverPort = 1883;  
+        int serverPort = 1883;
         const char *serverAddr = default_mqtt_address;
         const char *mqttUsername = default_mqtt_username;
         const char *mqttPassword = default_mqtt_password;
@@ -141,13 +141,14 @@ void MQTT::reconnect()
         }
         pubSub.setServer(serverAddr, serverPort);
 
-        DEBUG_MSG("Connecting to MQTT server %s, port: %d, username: %s, password: %s\n", serverAddr, serverPort, mqttUsername, mqttPassword);
+        DEBUG_MSG("Connecting to MQTT server %s, port: %d, username: %s, password: %s\n", serverAddr, serverPort, mqttUsername,
+                  mqttPassword);
         auto myStatus = (statusTopic + owner.id);
         bool connected = pubSub.connect(owner.id, mqttUsername, mqttPassword, myStatus.c_str(), 1, true, "offline");
         if (connected) {
             DEBUG_MSG("MQTT connected\n");
             enabled = true; // Start running background process again
-            getController().blockDelay();
+            reschedule();
 
             /// FIXME, include more information in the status text
             bool ok = pubSub.publish(myStatus.c_str(), "online", true);

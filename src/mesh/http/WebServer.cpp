@@ -177,7 +177,7 @@ int32_t WebServerThread::runOnce()
     }
 
     // Loop every 5ms.
-    return (5);
+    return (isWebServerReady ? 5 : 1000);
 }
 
 void initWebServer()

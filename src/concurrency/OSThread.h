@@ -71,6 +71,8 @@ class OSThread : public Thread
     void setIntervalFromNow(unsigned long _interval);
 
     static ExtendedThreadController &getController(void);
+    /// If a thread does something that might need for it to be rescheduled ASAP it can call this function
+    void reschedule(void);
 
   protected:
     /**
