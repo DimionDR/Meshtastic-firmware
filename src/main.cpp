@@ -139,8 +139,9 @@ bool ButtonThread::shutdown_on_long_stop = false;
 #endif
 
 static Periodic *ledPeriodic;
-static OSThread *powerFSMthread, *buttonThread;
+static OSThread *powerFSMthread;
 #if HAS_BUTTON
+static OSThread *buttonThread;
 uint32_t ButtonThread::longPressTime = 0;
 #endif
 

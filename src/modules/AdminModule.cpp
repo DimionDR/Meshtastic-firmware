@@ -138,6 +138,11 @@ bool AdminModule::handleReceivedProtobuf(const MeshPacket &mp, AdminMessage *r)
         nodeDB.factoryReset();
         reboot(DEFAULT_REBOOT_SECONDS);
         break;
+    } case AdminMessage_nodedb_reset_tag: {
+        DEBUG_MSG("Initiating node-db reset\n");
+        nodeDB.resetNodes();
+        reboot(DEFAULT_REBOOT_SECONDS);
+        break;
     }
     case AdminMessage_begin_edit_settings_tag: {
         DEBUG_MSG("Beginning transaction for editing settings\n");
@@ -171,6 +176,12 @@ bool AdminModule::handleReceivedProtobuf(const MeshPacket &mp, AdminMessage *r)
         }
         break;
     }
+    
+    // If asked for a response and it is not yet set, generate an 'ACK' response
+    if (mp.decoded.want_response && !myReply) {
+        myReply = allocErrorResponse(Routing_Error_NONE, &mp);
+    }
+
     return handled;
 }
 

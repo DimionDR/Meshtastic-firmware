@@ -90,13 +90,14 @@ typedef struct _ModuleConfig_ExternalNotificationConfig {
     bool active;
     bool alert_message;
     bool alert_bell;
+    bool use_pwm;
 } ModuleConfig_ExternalNotificationConfig;
 
 typedef struct _ModuleConfig_MQTTConfig { 
     bool enabled;
     char address[32];
-    char username[32];
-    char password[32];
+    char username[64];
+    char password[64];
     bool encryption_enabled;
     bool json_enabled;
 } ModuleConfig_MQTTConfig;
@@ -184,7 +185,7 @@ extern "C" {
 #define ModuleConfig_MQTTConfig_init_default     {0, "", "", "", 0, 0}
 #define ModuleConfig_AudioConfig_init_default    {0, 0, 0, 0, _ModuleConfig_AudioConfig_Audio_Baud_MIN}
 #define ModuleConfig_SerialConfig_init_default   {0, 0, 0, 0, _ModuleConfig_SerialConfig_Serial_Baud_MIN, 0, _ModuleConfig_SerialConfig_Serial_Mode_MIN}
-#define ModuleConfig_ExternalNotificationConfig_init_default {0, 0, 0, 0, 0, 0}
+#define ModuleConfig_ExternalNotificationConfig_init_default {0, 0, 0, 0, 0, 0, 0}
 #define ModuleConfig_StoreForwardConfig_init_default {0, 0, 0, 0, 0}
 #define ModuleConfig_RangeTestConfig_init_default {0, 0, 0}
 #define ModuleConfig_TelemetryConfig_init_default {0, 0, 0, 0, 0}
@@ -193,7 +194,7 @@ extern "C" {
 #define ModuleConfig_MQTTConfig_init_zero        {0, "", "", "", 0, 0}
 #define ModuleConfig_AudioConfig_init_zero       {0, 0, 0, 0, _ModuleConfig_AudioConfig_Audio_Baud_MIN}
 #define ModuleConfig_SerialConfig_init_zero      {0, 0, 0, 0, _ModuleConfig_SerialConfig_Serial_Baud_MIN, 0, _ModuleConfig_SerialConfig_Serial_Mode_MIN}
-#define ModuleConfig_ExternalNotificationConfig_init_zero {0, 0, 0, 0, 0, 0}
+#define ModuleConfig_ExternalNotificationConfig_init_zero {0, 0, 0, 0, 0, 0, 0}
 #define ModuleConfig_StoreForwardConfig_init_zero {0, 0, 0, 0, 0}
 #define ModuleConfig_RangeTestConfig_init_zero   {0, 0, 0}
 #define ModuleConfig_TelemetryConfig_init_zero   {0, 0, 0, 0, 0}
@@ -222,6 +223,7 @@ extern "C" {
 #define ModuleConfig_ExternalNotificationConfig_active_tag 4
 #define ModuleConfig_ExternalNotificationConfig_alert_message_tag 5
 #define ModuleConfig_ExternalNotificationConfig_alert_bell_tag 6
+#define ModuleConfig_ExternalNotificationConfig_use_pwm_tag 7
 #define ModuleConfig_MQTTConfig_enabled_tag      1
 #define ModuleConfig_MQTTConfig_address_tag      2
 #define ModuleConfig_MQTTConfig_username_tag     3
@@ -314,7 +316,8 @@ X(a, STATIC,   SINGULAR, UINT32,   output_ms,         2) \
 X(a, STATIC,   SINGULAR, UINT32,   output,            3) \
 X(a, STATIC,   SINGULAR, BOOL,     active,            4) \
 X(a, STATIC,   SINGULAR, BOOL,     alert_message,     5) \
-X(a, STATIC,   SINGULAR, BOOL,     alert_bell,        6)
+X(a, STATIC,   SINGULAR, BOOL,     alert_bell,        6) \
+X(a, STATIC,   SINGULAR, BOOL,     use_pwm,           7)
 #define ModuleConfig_ExternalNotificationConfig_CALLBACK NULL
 #define ModuleConfig_ExternalNotificationConfig_DEFAULT NULL
 
@@ -382,13 +385,13 @@ extern const pb_msgdesc_t ModuleConfig_CannedMessageConfig_msg;
 /* Maximum encoded size of messages (where known) */
 #define ModuleConfig_AudioConfig_size            22
 #define ModuleConfig_CannedMessageConfig_size    49
-#define ModuleConfig_ExternalNotificationConfig_size 20
-#define ModuleConfig_MQTTConfig_size             105
+#define ModuleConfig_ExternalNotificationConfig_size 22
+#define ModuleConfig_MQTTConfig_size             169
 #define ModuleConfig_RangeTestConfig_size        10
 #define ModuleConfig_SerialConfig_size           26
 #define ModuleConfig_StoreForwardConfig_size     22
 #define ModuleConfig_TelemetryConfig_size        18
-#define ModuleConfig_size                        107
+#define ModuleConfig_size                        172
 
 #ifdef __cplusplus
 } /* extern "C" */
